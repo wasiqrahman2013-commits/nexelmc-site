@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NexelMC</title>
+    <style>
+        body { background: #0a0a0a; color: white; font-family: Arial; text-align: center; padding-top: 100px; }
+        h1 { color: #ff6b00; font-size: 48px; }
+        .ip { font-size: 24px; background: #1a1a1a; display: inline-block; padding: 10px 20px; border-radius: 10px; margin: 20px 0; }
+        button { background: #ff6b00; color: white; border: none; padding: 12px 24px; font-size: 18px; border-radius: 8px; cursor: pointer; }
+        button:hover { background: #e55a00; }
+        .links a { color: #ff6b00; margin: 0 15px; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h1>⚡ NEXELMC</h1>
+    <p>Next Generation Minecraft Multiplayer</p>
+    <div class="ip">play.nexelmc.com</div>
+    <button onclick="copyIP()">📋 Copy Server IP</button>
+    <div class="links" style="margin-top: 30px;">
+        <a href="#">About</a> | <a href="#">Rules</a> | <a href="#">Staff</a> | <a href="#">Apply</a> | <a href="#">Vote</a>
+    </div>
+    <script>
+        function copyIP() {
+            navigator.clipboard.writeText("play.nexelmc.com");
+            alert("✓ Server IP copied!");
+        }
+    </script>
+</body>
+</html>
