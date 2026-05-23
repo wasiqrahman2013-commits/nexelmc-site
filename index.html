@@ -1,29 +1,308 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>NexelMC</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexelMC | Next Generation Minecraft</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #0a0a0a; color: white; font-family: Arial; text-align: center; padding-top: 100px; }
-        h1 { color: #ff6b00; font-size: 48px; }
-        .ip { font-size: 24px; background: #1a1a1a; display: inline-block; padding: 10px 20px; border-radius: 10px; margin: 20px 0; }
-        button { background: #ff6b00; color: white; border: none; padding: 12px 24px; font-size: 18px; border-radius: 8px; cursor: pointer; }
-        button:hover { background: #e55a00; }
-        .links a { color: #ff6b00; margin: 0 15px; text-decoration: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #fff; overflow-x: hidden; }
+        
+        /* Particles Canvas */
+        #particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        
+        /* Navbar */
+        .navbar { position: fixed; top: 0; width: 100%; background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid rgba(0,255,255,0.2); padding: 1rem 0; }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .nav-logo { font-size: 1.5rem; font-weight: 800; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+        .nav-logo i { color: #00ffff; font-size: 1.8rem; }
+        .nav-logo span { background: linear-gradient(135deg, #00ffff, #0088ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { color: #fff; text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #00ffff; }
+        .nav-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
+        
+        /* Hero */
+        .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; position: relative; overflow: hidden; }
+        .hero-content { z-index: 2; max-width: 800px; padding: 0 2rem; }
+        .hero-badge { display: inline-block; background: rgba(0,255,255,0.1); border: 1px solid #00ffff; color: #00ffff; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; margin-bottom: 1rem; }
+        .hero-title { font-size: 4rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, #fff, #00ffff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .hero-subtitle { font-size: 1.2rem; color: #b0b0b0; margin-bottom: 2rem; }
+        .hero-buttons { display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap; }
+        .btn-primary, .btn-secondary { padding: 0.8rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, #00ffff, #0088ff); color: #000; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 20px rgba(0,255,255,0.5); }
+        .btn-secondary { background: transparent; border: 2px solid #00ffff; color: #00ffff; }
+        .btn-secondary:hover { background: rgba(0,255,255,0.1); transform: translateY(-2px); }
+        .server-card { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 1rem; display: inline-block; backdrop-filter: blur(10px); margin-top: 1rem; }
+        .server-ip { font-family: monospace; font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .server-ip i { color: #00ffff; margin-right: 0.5rem; }
+        .server-status { display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.9rem; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #ff0000; }
+        
+        /* Countdown Timer */
+        .countdown { margin-top: 2rem; }
+        .countdown h3 { margin-bottom: 1rem; color: #00ffff; }
+        .timer { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+        .timer-item { background: rgba(0,255,255,0.1); border-radius: 8px; padding: 0.8rem; min-width: 70px; text-align: center; }
+        .timer-number { font-size: 2rem; font-weight: 800; }
+        .timer-label { font-size: 0.7rem; color: #b0b0b0; }
+        
+        /* Sections */
+        .container { max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; background: linear-gradient(135deg, #fff, #00ffff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        
+        /* Features Grid */
+        .features-grid, .gamemodes-grid, .staff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .feature-card, .gamemode-card, .staff-card { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 2rem; text-align: center; transition: all 0.3s; border: 1px solid rgba(0,255,255,0.1); }
+        .feature-card:hover, .gamemode-card:hover, .staff-card:hover { transform: translateY(-5px); border-color: #00ffff; box-shadow: 0 0 30px rgba(0,255,255,0.2); }
+        .feature-icon, .gamemode-icon { font-size: 2.5rem; color: #00ffff; margin-bottom: 1rem; }
+        .feature-card h3, .gamemode-card h3, .staff-card h3 { margin-bottom: 0.5rem; }
+        .feature-card p, .gamemode-card p, .staff-card p { color: #b0b0b0; font-size: 0.9rem; }
+        .gamemode-status { display: inline-block; background: rgba(0,255,255,0.1); color: #00ffff; padding: 0.2rem 0.8rem; border-radius: 20px; font-size: 0.7rem; margin-top: 1rem; }
+        
+        /* Stats Section */
+        .stats { background: linear-gradient(135deg, #0a0a0a, #001133); }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; text-align: center; }
+        .stat-number { font-size: 3rem; font-weight: 800; color: #00ffff; }
+        .stat-label { color: #b0b0b0; font-size: 0.9rem; }
+        
+        /* Gallery */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+        .gallery-item { background: #1a1a1a; border-radius: 8px; overflow: hidden; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: #00ffff; font-size: 2rem; }
+        
+        /* FAQ */
+        .faq-item { background: rgba(255,255,255,0.05); border-radius: 8px; margin-bottom: 1rem; overflow: hidden; }
+        .faq-question { padding: 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+        .faq-question i { transition: transform 0.3s; }
+        .faq-answer { padding: 0 1rem; max-height: 0; overflow: hidden; transition: max-height 0.3s; color: #b0b0b0; }
+        .faq-item.active .faq-answer { padding: 0 1rem 1rem; max-height: 200px; }
+        .faq-item.active .faq-question i { transform: rotate(180deg); }
+        
+        /* Footer */
+        footer { background: #050505; padding: 3rem 2rem 1rem; margin-top: 2rem; }
+        .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+        .footer-section h4 { margin-bottom: 1rem; color: #00ffff; }
+        .footer-section a { display: block; color: #b0b0b0; text-decoration: none; margin-bottom: 0.5rem; transition: color 0.3s; }
+        .footer-section a:hover { color: #00ffff; }
+        .social-links { display: flex; gap: 1rem; margin-top: 1rem; }
+        .social-links a { font-size: 1.5rem; }
+        .footer-bottom { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid #222; color: #666; font-size: 0.8rem; }
+        
+        /* Animations */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-up { animation: fadeInUp 0.6s ease forwards; }
+        
+        @media (max-width: 768px) {
+            .nav-toggle { display: block; }
+            .nav-links { display: none; position: absolute; top: 70px; left: 0; right: 0; background: #0a0a0a; flex-direction: column; padding: 1rem; text-align: center; border-bottom: 1px solid #00ffff; }
+            .nav-links.active { display: flex; }
+            .hero-title { font-size: 2rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero-buttons { flex-direction: column; align-items: center; }
+        }
     </style>
 </head>
 <body>
-    <h1>⚡ NEXELMC</h1>
-    <p>Next Generation Minecraft Multiplayer</p>
-    <div class="ip">Coming Soon</div>
-    <button onclick="copyIP()">📋 Copy Server IP</button>
-    <div class="links" style="margin-top: 30px;">
-        <a href="#">About</a> | <a href="#">Rules</a> | <a href="#">Staff</a> | <a href="#">Apply</a> | <a href="#">Vote</a>
+
+<canvas id="particles"></canvas>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo"><i class="fas fa-crown"></i><span>NEXELMC</span></a>
+        <div class="nav-links">
+            <a href="/" class="active">Home</a>
+            <a href="/about">About</a>
+            <a href="/rules">Rules</a>
+            <a href="/staff">Staff</a>
+            <a href="/apply">Apply</a>
+            <a href="/vote">Vote</a>
+        </div>
+        <button class="nav-toggle"><i class="fas fa-bars"></i></button>
     </div>
-    <script>
-        function copyIP() {
-            navigator.clipboard.writeText("Coming Soon");
-            alert("✓ Server IP will be announced soon!");
+</nav>
+
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge"><i class="fas fa-fire"></i> NOW IN BETA</div>
+        <h1 class="hero-title">Next Generation<br>Minecraft Multiplayer</h1>
+        <p class="hero-subtitle">Zero pay-to-win. Active staff. Browser support. Join the revolution.</p>
+        <div class="hero-buttons">
+            <button class="btn-primary" onclick="copyIP()"><i class="fas fa-copy"></i> Copy Server IP</button>
+            <button class="btn-secondary" onclick="window.open('https://discord.gg/xgbzTgUZuD', '_blank')"><i class="fab fa-discord"></i> Join Discord</button>
+        </div>
+        <div class="server-card">
+            <div class="server-ip"><i class="fas fa-server"></i> play.nexelmc.com</div>
+            <div class="server-status"><span class="status-dot"></span> Server Status: <span id="serverStatus">Checking...</span></div>
+        </div>
+        <div class="countdown">
+            <h3><i class="fas fa-hourglass-half"></i> Server Launch</h3>
+            <div class="timer">
+                <div class="timer-item"><div class="timer-number" id="days">0</div><div class="timer-label">Days</div></div>
+                <div class="timer-item"><div class="timer-number" id="hours">0</div><div class="timer-label">Hours</div></div>
+                <div class="timer-item"><div class="timer-number" id="minutes">0</div><div class="timer-label">Minutes</div></div>
+                <div class="timer-item"><div class="timer-number" id="seconds">0</div><div class="timer-label">Seconds</div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">Why NexelMC?</h2>
+        <div class="features-grid">
+            <div class="feature-card"><div class="feature-icon"><i class="fas fa-bolt"></i></div><h3>Low Latency</h3><p>Optimized server performance for smooth gameplay worldwide</p></div>
+            <div class="feature-card"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><h3>Anti-Cheat</h3><p>Advanced protection against hackers and unfair advantages</p></div>
+            <div class="feature-card"><div class="feature-icon"><i class="fas fa-globe"></i></div><h3>Browser Support</h3><p>Play directly from your browser via Eaglercraft</p></div>
+            <div class="feature-card"><div class="feature-icon"><i class="fas fa-users"></i></div><h3>Active Community</h3><p>Friendly players and dedicated staff ready to help</p></div>
+            <div class="feature-card"><div class="feature-icon"><i class="fas fa-dollar-sign"></i></div><h3>Zero Pay-to-Win</h3><p>Skill matters, not your wallet</p></div>
+            <div class="feature-card"><div class="feature-icon"><i class="fas fa-plug"></i></div><h3>Custom Plugins</h3><p>Unique features you won't find anywhere else</p></div>
+            <div class="feature-card"><div class="feature-icon"><i class="fas fa-clock"></i></div><h3>24/7 Uptime</h3><p>Play anytime, anywhere</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="gamemodes">
+    <div class="container">
+        <h2 class="section-title">Game Modes</h2>
+        <div class="gamemodes-grid">
+            <div class="gamemode-card"><div class="gamemode-icon"><i class="fas fa-fist-raised"></i></div><h3>Duels</h3><p>1v1 battles to prove your skill</p><span class="gamemode-status">Coming Soon</span></div>
+            <div class="gamemode-card"><div class="gamemode-icon"><i class="fas fa-bed"></i></div><h3>BedWars</h3><p>Defend your bed, destroy theirs</p><span class="gamemode-status">Coming Soon</span></div>
+            <div class="gamemode-card"><div class="gamemode-icon"><i class="fas fa-trophy"></i></div><h3>PvP Arena</h3><p>No rules, last man standing</p><span class="gamemode-status">Coming Soon</span></div>
+            <div class="gamemode-card"><div class="gamemode-icon"><i class="fas fa-tree"></i></div><h3>Survival</h3><p>Build, explore, thrive with friends</p><span class="gamemode-status">Coming Soon</span></div>
+            <div class="gamemode-card"><div class="gamemode-icon"><i class="fas fa-cloud-moon"></i></div><h3>SkyWars</h3><p>Battle on floating islands</p><span class="gamemode-status">Coming Soon</span></div>
+            <div class="gamemode-card"><div class="gamemode-icon"><i class="fas fa-hat-wizard"></i></div><h3>KitPVP</h3><p>Choose your kit and fight</p><span class="gamemode-status">Coming Soon</span></div>
+            <div class="gamemode-card"><div class="gamemode-icon"><i class="fas fa-heartbeat"></i></div><h3>Lifesteal</h3><p>Steal hearts from your enemies</p><span class="gamemode-status">Coming Soon</span></div>
+        </div>
+    </div>
+</section>
+
+<section class="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-number" id="memberCount">113</div><div class="stat-label">Discord Members</div></div>
+            <div class="stat-card"><div class="stat-number">24/7</div><div class="stat-label">Uptime</div></div>
+            <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Pay-to-Win</div></div>
+            <div class="stat-card"><div class="stat-number">99.9%</div><div class="stat-label">Anti-Cheat</div></div>
+        </div>
+    </div>
+</section>
+
+<section class="staff-showcase">
+    <div class="container">
+        <h2 class="section-title">Our Staff Team</h2>
+        <div class="staff-grid">
+            <div class="staff-card"><div class="feature-icon"><i class="fas fa-crown"></i></div><h3>Owner</h3><p>wasiq_rahman_yt</p></div>
+            <div class="staff-card"><div class="feature-icon"><i class="fas fa-user-tie"></i></div><h3>Co-Owner</h3><p>Coming Soon</p></div>
+            <div class="staff-card"><div class="feature-icon"><i class="fas fa-shield-alt"></i></div><h3>Admin</h3><p>Coming Soon</p></div>
+            <div class="staff-card"><div class="feature-icon"><i class="fas fa-code"></i></div><h3>Developer</h3><p>Coming Soon</p></div>
+            <div class="staff-card"><div class="feature-icon"><i class="fas fa-hammer"></i></div><h3>Builder</h3><p>Coming Soon</p></div>
+            <div class="staff-card"><div class="feature-icon"><i class="fas fa-hands-helping"></i></div><h3>Helper</h3><p>Coming Soon</p></div>
+        </div>
+    </div>
+</section>
+
+<section class="gallery">
+    <div class="container">
+        <h2 class="section-title">Gallery</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item"><i class="fas fa-image"></i></div>
+            <div class="gallery-item"><i class="fas fa-image"></i></div>
+            <div class="gallery-item"><i class="fas fa-image"></i></div>
+            <div class="gallery-item"><i class="fas fa-image"></i></div>
+        </div>
+    </div>
+</section>
+
+<section class="faq">
+    <div class="container">
+        <h2 class="section-title">FAQ</h2>
+        <div class="faq-item"><div class="faq-question">How do I join the server? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Copy the server IP and paste it into your Eaglercraft client or Minecraft Java Edition.</div></div>
+        <div class="faq-item"><div class="faq-question">Is the server free? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Yes! NexelMC is completely free with zero pay-to-win mechanics.</div></div>
+        <div class="faq-item"><div class="faq-question">Can I play from a browser? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Yes! NexelMC supports Eaglercraft for browser-based gameplay.</div></div>
+        <div class="faq-item"><div class="faq-question">How do I apply for staff? <i class="fas fa-chevron-down"></i></div><div class="faq-answer">Visit the Apply page and fill out the application form.</div></div>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-container">
+        <div class="footer-section"><h4>⚡ NexelMC</h4><p>The next generation Minecraft multiplayer experience. Play from your browser or Java Edition.</p><div class="social-links"><a href="#"><i class="fab fa-discord"></i></a><a href="#"><i class="fab fa-twitter"></i></a><a href="#"><i class="fab fa-github"></i></a></div></div>
+        <div class="footer-section"><h4>Quick Links</h4><a href="/about">About</a><a href="/rules">Rules</a><a href="/staff">Staff</a><a href="/apply">Apply</a><a href="/vote">Vote</a></div>
+        <div class="footer-section"><h4>Connect</h4><p><i class="fab fa-discord"></i> discord.gg/nexelmc</p><p><i class="fas fa-server"></i> play.nexelmc.com</p></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2026 NexelMC. Not affiliated with Mojang AB.</p></div>
+</footer>
+
+<script>
+    // Particles effect
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    let particles = [];
+    for(let i = 0; i < 100; i++) {
+        particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5 });
+    }
+    function animate() {
+        requestAnimationFrame(animate);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#00ffff';
+        for(let p of particles) {
+            p.x += p.vx;
+            p.y += p.vy;
+            if(p.x < 0) p.x = canvas.width;
+            if(p.x > canvas.width) p.x = 0;
+            if(p.y < 0) p.y = canvas.height;
+            if(p.y > canvas.height) p.y = 0;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fill();
         }
-    </script>
+    }
+    animate();
+    window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+    // Copy IP
+    function copyIP() { navigator.clipboard.writeText("play.nexelmc.com"); alert("✓ Server IP copied!"); }
+
+    // Server status (mock)
+    async function checkStatus() {
+        const statusEl = document.getElementById('serverStatus');
+        const dotEl = document.querySelector('.status-dot');
+        try {
+            const res = await fetch('/api/status');
+            const data = await res.json();
+            if(data.online) { statusEl.textContent = '🟢 Online'; dotEl.style.background = '#00ff00'; }
+            else { statusEl.textContent = '🔴 Offline'; dotEl.style.background = '#ff0000'; }
+        } catch(e) { statusEl.textContent = '🔴 Offline'; dotEl.style.background = '#ff0000'; }
+    }
+    checkStatus(); setInterval(checkStatus, 30000);
+
+    // Countdown (7 days from now)
+    const launch = new Date();
+    launch.setDate(launch.getDate() + 7);
+    function updateCountdown() {
+        const now = new Date();
+        const diff = launch - now;
+        if(diff <= 0) { document.querySelector('.countdown').style.display = 'none'; return; }
+        document.getElementById('days').textContent = Math.floor(diff / (1000 * 60 * 60 * 24));
+        document.getElementById('hours').textContent = Math.floor((diff % (86400000)) / 3600000);
+        document.getElementById('minutes').textContent = Math.floor((diff % 3600000) / 60000);
+        document.getElementById('seconds').textContent = Math.floor((diff % 60000) / 1000);
+    }
+    updateCountdown(); setInterval(updateCountdown, 1000);
+
+    // Mobile nav toggle
+    document.querySelector('.nav-toggle').addEventListener('click', () => { document.querySelector('.nav-links').classList.toggle('active'); });
+
+    // FAQ accordion
+    document.querySelectorAll('.faq-question').forEach(q => { q.addEventListener('click', () => { q.parentElement.classList.toggle('active'); }); });
+
+    // Animate on scroll
+    const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('fade-up'); }); }, { threshold: 0.1 });
+    document.querySelectorAll('.feature-card, .gamemode-card, .staff-card, .stat-card').forEach(el => { observer.observe(el); });
+</script>
 </body>
 </html>
